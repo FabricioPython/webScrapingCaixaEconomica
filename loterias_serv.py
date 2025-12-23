@@ -86,7 +86,7 @@ def run(playwright: Playwright):
         
     print(f'dados {len(dados)}')
     df  = pd.DataFrame(dados) 
-    df.to_csv('./lotericos_estado_rj.csv')
+    df.to_csv('./lotericos_estado_rj021.csv')
 
 
 
