@@ -67,17 +67,16 @@ def run(playwright: Playwright):
         itens = soup.select('.resultado-busca-item')
 
         for i, loterica in enumerate(itens):
-            #aux =  loterica.replace('\t', ' ').split('\n')
-            #aux.extend(informacoes[i].split('\n'))
-            #dados.extend([aux])
-            #print(informacoes[i].split('\n'))
-            fantasia = loterica.find('h4', class_='resultado-busca-titulo').next_sibling
+
+            fantasia = loterica.select('h4.resultado-busca-titulo')[0].text.strip()
+            endereco = loterica.select('h4.resultado-busca-titulo + p')[0].text.strip()
             nome = loterica.find('b', text='Razão Social:').next_sibling
             cnpj = loterica.find('b', text="CNPJ:").next_sibling
             ag_vinculada = loterica.find('b', text='Agência de vinculação:').next_sibling
             email = loterica.find('b', text='E-mail:').next_sibling
-            #atividade = loterica.find('p', class_='informacoes').get_text()
-            dados.append([nome, cnpj, ag_vinculada, email])
+            atividade = loterica.select('p.informacoes + p')[0].text.strip()
+            print(atividade)
+            dados.append([fantasia, nome, endereco, cnpj, ag_vinculada, email, atividade])
 
 
     
@@ -86,7 +85,7 @@ def run(playwright: Playwright):
         
     print(f'dados {len(dados)}')
     df  = pd.DataFrame(dados) 
-    df.to_csv('./lotericos_estado_rj021.csv')
+    df.to_csv('./lotericos_estado_rj_completo.csv')
 
 
 
