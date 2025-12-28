@@ -36,7 +36,5 @@ Compreender a cobertatura de postos de atendimento da caixa economica: como agen
 - [FabricioPython](https://github.com/FabricioPython)
 
 
-## Screenshots
 
-![loterias](https://github.com/FabricioPython/webScrapingCaixaEconomica/blob/master/lotericos_estado.csv)
 
