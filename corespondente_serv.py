@@ -33,7 +33,7 @@ def run(playwright: Playwright):
 
     page.select_option(
         "#ctl00_ctl61_g_7fcd6a4b_5583_4b25_b2c4_004b6fef4036_ddlTipo",
-        value="2",
+        value="6",
     )
 
     page.select_option(
@@ -49,7 +49,7 @@ def run(playwright: Playwright):
         "Array.from(document.querySelectorAll('#ctl00_ctl61_g_7fcd6a4b_5583_4b25_b2c4_004b6fef4036_ddlCidade option')).map(o => o.value).filter(v => v !== '0');"
     )
 
-    for op in opcoes[:2]:
+    for op in opcoes:
 
         page.locator(
             "#ctl00_ctl61_g_7fcd6a4b_5583_4b25_b2c4_004b6fef4036_ddlCidade"
@@ -114,7 +114,7 @@ def run(playwright: Playwright):
         ],
     )
 
-    df.to_csv("./lotericos_estado.csv")
+    df.to_csv("./correspondentes_bancarios_estado.csv")
 
     # page.wait_for_event("close")
     browser.close()
