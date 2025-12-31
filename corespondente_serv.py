@@ -29,6 +29,7 @@ def run(playwright: Playwright):
     page = browser.new_page()
     page.goto("https://www.caixa.gov.br/atendimento/Paginas/encontre-a-caixa.aspx")
 
+    # pop up
     page.click("#adopt-accept-all-button")
 
     page.select_option(
@@ -75,17 +76,17 @@ def run(playwright: Playwright):
 
         itens = soup.select(".resultado-busca-item")
 
-        for i, loterica in enumerate(itens):
+        for i, corr_bancario in enumerate(itens):
 
-            fantasia = loterica.select("h4.resultado-busca-titulo")[0].text.strip()
-            endereco = loterica.select("h4.resultado-busca-titulo + p")[0].text.strip()
-            nome = loterica.find("b", text="Razão Social:").next_sibling
-            cnpj = loterica.find("b", text="CNPJ:").next_sibling
-            ag_vinculada = loterica.find(
+            fantasia = corr_bancario.select("h4.resultado-busca-titulo")[0].text.strip()
+            endereco = corr_bancario.select("h4.resultado-busca-titulo + p")[0].text.strip()
+            nome = corr_bancario.find("b", text="Razão Social:").next_sibling
+            cnpj = corr_bancario.find("b", text="CNPJ:").next_sibling
+            ag_vinculada = corr_bancario.find(
                 "b", text="Agência de vinculação:"
             ).next_sibling
-            email = loterica.find("b", text="E-mail:").next_sibling
-            atividade = loterica.select("p.informacoes + p")[0].text.strip()
+            email = corr_bancario.find("b", text="E-mail:").next_sibling
+            atividade = corr_bancario.select("p.informacoes + p")[0].text.strip()
             # print(atividade, i)
             dados.append(
                 [

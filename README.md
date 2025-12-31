@@ -34,7 +34,3 @@ Compreender a cobertatura de postos de atendimento da caixa economica: como agen
 ## Autores
 
 - [FabricioPython](https://github.com/FabricioPython)
-
-
-
-
