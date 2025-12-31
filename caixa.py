@@ -30,7 +30,7 @@ class Uf(StrEnum):
     CE="CE"
     DF="DF"
     ES="ES"
-    G0="GO"
+    GO="GO"
     MA="MA"
     MT="MT"
     MS="MS"
@@ -43,7 +43,7 @@ class Uf(StrEnum):
     RJ="RJ"
     RN="RN"
     RS="RS"
-    R0="RO"
+    RO="RO"
     RR="RR"
     SC="SC"
     SP="SP"
@@ -100,8 +100,7 @@ class CaixaData():
         )
 
         # loop
-        for cidade in self.opcoes:
-            ...
+        for cidade in self.opcoes: #[:3]: #reduzir loop para teste
 
             # recebe uma cidade
             self.page.locator(
@@ -122,7 +121,7 @@ class CaixaData():
                 status = self.test_botao(self.page, cidade)
 
             time.sleep(1)
-            
+
 
         
 
