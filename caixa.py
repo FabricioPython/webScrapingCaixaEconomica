@@ -78,11 +78,13 @@ class CaixaData:
         self.data = []
         self.data_agencia = []
         self.data_loteria = []
+        self.data_corr_bancario = []
+        self.data_posto_atendimento = []
         self.tipo = tipo
         self.uf = uf
         self.google = plw.chromium.launch(headless=visivel)
 
-    def buscar(self, uf: Uf):
+    def buscar(self):
 
         # Abre o navegador
         self.page = self.google.new_page()
@@ -113,7 +115,7 @@ class CaixaData:
         )
 
         # loop
-        for cidade in self.opcoes[:5]:  # reduzir loop para teste
+        for cidade in self.opcoes:  # reduzir loop para teste
 
             # recebe uma cidade
             self.page.locator(ElementosId.ID_CIDADE.value).select_option(cidade)
@@ -144,29 +146,40 @@ class CaixaData:
 
                 if self.tipo == TipoAtendimento.AGENCIAS:
                     agencia = resultado.select(ElementosClasse.H4.value)[0].text
+
                     endereco_aux = resultado.select(ElementosClasse.ENDERECO.value)[
                         0
                     ].text
+
                     cgc = resultado.select(ElementosClasse.CGC.value)[0].text
+
                     endereco = clean(
                         endereco_aux, normalize_whitespace=True, no_line_breaks=True
                     )
+
                     linha = [agencia, cgc, endereco]
+
                     self.data_agencia.append(linha)
 
                 elif self.tipo == TipoAtendimento.LOTERIAS:
                     nome_fantasia = resultado.select(ElementosClasse.H4.value)[0].text
+
                     razao_social = resultado.find(
                         "b", string="Razão Social:"
                     ).next_sibling
+
                     cnpj = resultado.find("b", string="CNPJ:").next_sibling
+
                     ag_vinculada = resultado.find(
                         "b", string="Agência de vinculação:"
                     ).next_sibling
+
                     email = resultado.find("b", string="E-mail:").next_sibling
+
                     endereco_loteria = resultado.select(ElementosClasse.ENDERECO.value)[
                         0
                     ].text.strip()
+
                     atividade = resultado.select(ElementosClasse.ATIVIDADE.value)[
                         0
                     ].text.strip()
@@ -183,10 +196,38 @@ class CaixaData:
                     self.data_loteria.append(linha_loteria)
 
                 elif self.tipo == TipoAtendimento.CBANCARIO:
-                    ...
+                    linha_cbancario = [
+                        resultado.select(ElementosClasse.H4.value)[0].text,
+                        resultado.find("b", string="Razão Social:").next_sibling,
+                        resultado.find("b", string="CNPJ:").next_sibling,
+                        resultado.find(
+                            "b", string="Agência de vinculação:"
+                        ).next_sibling,
+                        resultado.find("b", string="E-mail:").next_sibling,
+                        resultado.select(ElementosClasse.ENDERECO.value)[
+                            0
+                        ].text.strip(),
+                        resultado.select(ElementosClasse.ATIVIDADE.value)[
+                            0
+                        ].text.strip(),
+                    ]
+                    self.data_corr_bancario.append(linha_cbancario)
 
                 elif self.tipo == TipoAtendimento.PATENDIMENTO:
-                    ...
+                    endereco_auxp = resultado.select(ElementosClasse.ENDERECO.value)[
+                        0
+                    ].text
+                    linha_patendimento = [
+                        resultado.select(ElementosClasse.H4.value)[0].text,
+                        resultado.select(ElementosClasse.CGC.value)[0].text,
+                        clean(
+                            endereco_auxp,
+                            normalize_whitespace=True,
+                            no_line_breaks=True,
+                        ),
+                    ]
+
+                    self.data_posto_atendimento.append(linha_patendimento)
 
         return print("Finalizado!")
 
@@ -212,6 +253,36 @@ class CaixaData:
             df.to_csv(f"./Loterias/Loterias_{self.uf.value}.csv")
             print("Arquivo exportado!")
 
+        elif self.tipo == TipoAtendimento.CBANCARIO:
+            df = pd.DataFrame(
+                self.data_corr_bancario,
+                columns=[
+                    "Nome Fantasia",
+                    "Razao Social",
+                    "CNPJ",
+                    "Agencia Vinculada",
+                    "Email",
+                    "Endereco",
+                    "Atividade",
+                ],
+            )
+            df.to_csv(
+                f"./Correspondente_Bancario/Correspondente_Bancario_{self.uf.value}.csv"
+            )
+            print("Arquivo exportado!")
+
+        elif self.tipo == TipoAtendimento.PATENDIMENTO:
+            df = pd.DataFrame(
+                self.data_posto_atendimento,
+                columns=[
+                    "Nome",
+                    "CGC",
+                    "Endereco",
+                ],
+            )
+            df.to_csv(f"./Postos_de_Atendimento/Postos_Atendimento_{self.uf.value}.csv")
+            print("Arquivo exportado!")
+
     def ver_salvos(
         self,
     ): ...
@@ -229,9 +300,7 @@ class CaixaData:
 
 
 with sync_playwright() as plw:
-    scrping_rj = CaixaData(
-        plw=plw, tipo=TipoAtendimento.LOTERIAS, uf=Uf.ES, visivel=False
-    )
-    scrping_rj.buscar(uf=Uf.ES)
+    scrping = CaixaData(plw=plw, tipo=TipoAtendimento.AGENCIAS, uf=Uf.MG, visivel=False)
+    scrping.buscar()
     time.sleep(3)
-    scrping_rj.exportar()
+    scrping.exportar()
