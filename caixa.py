@@ -300,7 +300,7 @@ class CaixaData:
 
 
 with sync_playwright() as plw:
-    scrping = CaixaData(plw=plw, tipo=TipoAtendimento.AGENCIAS, uf=Uf.MG, visivel=False)
+    scrping = CaixaData(plw=plw, tipo=TipoAtendimento.CBANCARIO, uf=Uf.ES, visivel=False)
     scrping.buscar()
     time.sleep(3)
     scrping.exportar()
