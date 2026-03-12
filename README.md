@@ -1,5 +1,5 @@
 
-# Web Scraping Caixa
+# Web Scraping Caixa - Automação com Playwright
 
 
 Compreender a cobertatura de postos de atendimento da caixa economica: como agencias, loterias, correspondetes bancários, bem como suas particularidades a partir das bases de dados.
