@@ -10,6 +10,18 @@ from cleantext import clean
 
 url_base = "https://www.caixa.gov.br/atendimento/Paginas/encontre-a-caixa.aspx"
 
+CBANCARIO_LOTERICO = [
+    "Nome Fantasia",
+    "Razao Social",
+    "CNPJ",
+    "Agencia Vinculada",
+    "Email",
+    "Endereco",
+    "Atividade",
+]
+
+AGENCIAS_PATEND = ["Nome", "CGC", "Endereco"]
+
 
 class ElementosId(StrEnum):
     ID_TIPO_ATENDIMENTO = "#ctl00_ctl61_g_7fcd6a4b_5583_4b25_b2c4_004b6fef4036_ddlTipo"
@@ -184,16 +196,8 @@ class CaixaData:
                         0
                     ].text.strip()
 
-                    linha_loteria = [
-                        nome_fantasia,
-                        razao_social,
-                        cnpj,
-                        ag_vinculada,
-                        email,
-                        endereco_loteria,
-                        atividade,
-                    ]
-                    self.data_loteria.append(linha_loteria)
+                    
+                    self.data_loteria.append(CBANCARIO_LOTERICO)
 
                 elif self.tipo == TipoAtendimento.CBANCARIO:
                     linha_cbancario = [
@@ -233,53 +237,24 @@ class CaixaData:
 
     def exportar(self):
         if self.tipo == TipoAtendimento.AGENCIAS:
-            df = pd.DataFrame(self.data_agencia, columns=["Nome", "CGC", "Endereco"])
+            df = pd.DataFrame(self.data_agencia, columns=AGENCIAS_PATEND)
             df.to_csv(f"./Agencias/Agencias_{self.uf.value}.csv")
             print("Arquivo exportado!")
 
         elif self.tipo == TipoAtendimento.LOTERIAS:
-            df = pd.DataFrame(
-                self.data_loteria,
-                columns=[
-                    "Nome Fantasia",
-                    "Razao Social",
-                    "CNPJ",
-                    "Agencia Vinculada",
-                    "Email",
-                    "Endereco",
-                    "Atividade",
-                ],
-            )
+            df = pd.DataFrame(self.data_loteria, columns=CBANCARIO_LOTERICO)
             df.to_csv(f"./Loterias/Loterias_{self.uf.value}.csv")
             print("Arquivo exportado!")
 
         elif self.tipo == TipoAtendimento.CBANCARIO:
-            df = pd.DataFrame(
-                self.data_corr_bancario,
-                columns=[
-                    "Nome Fantasia",
-                    "Razao Social",
-                    "CNPJ",
-                    "Agencia Vinculada",
-                    "Email",
-                    "Endereco",
-                    "Atividade",
-                ],
-            )
+            df = pd.DataFrame(self.data_corr_bancario, columns=CBANCARIO_LOTERICO)
             df.to_csv(
                 f"./Correspondente_Bancario/Correspondente_Bancario_{self.uf.value}.csv"
             )
             print("Arquivo exportado!")
 
         elif self.tipo == TipoAtendimento.PATENDIMENTO:
-            df = pd.DataFrame(
-                self.data_posto_atendimento,
-                columns=[
-                    "Nome",
-                    "CGC",
-                    "Endereco",
-                ],
-            )
+            df = pd.DataFrame(self.data_posto_atendimento, columns=AGENCIAS_PATEND)
             df.to_csv(f"./Postos_de_Atendimento/Postos_Atendimento_{self.uf.value}.csv")
             print("Arquivo exportado!")
 
@@ -300,7 +275,7 @@ class CaixaData:
 
 
 with sync_playwright() as plw:
-    scrping = CaixaData(plw=plw, tipo=TipoAtendimento.AGENCIAS, uf=Uf.SP, visivel=False)
+    scrping = CaixaData(plw=plw, tipo=TipoAtendimento.AGENCIAS, uf=Uf.PE, visivel=False)
     scrping.buscar()
     time.sleep(3)
     scrping.exportar()
