@@ -10,6 +10,8 @@ from cleantext import clean
 
 url_base = "https://www.caixa.gov.br/atendimento/Paginas/encontre-a-caixa.aspx"
 
+
+
 CBANCARIO_LOTERICO = [
     "Nome Fantasia",
     "Razao Social",
@@ -77,6 +79,14 @@ class ElementosClasse(StrEnum):
     ATIVIDADE = "p.informacoes + p"
 
 
+CONFIG_EXPORTACAO = {
+    TipoAtendimento.AGENCIAS: ("data_agencia", AGENCIAS_PATEND, "Agencias", "Agencias"),
+    TipoAtendimento.LOTERIAS: ("data_loteria", CBANCARIO_LOTERICO, "Loterias", "Loterias"),
+    TipoAtendimento.CBANCARIO: ("data_corr_bancario", CBANCARIO_LOTERICO, "Correspondente_Bancario", "Correspondente_Bancario"),
+    TipoAtendimento.PATENDIMENTO: ("data_posto_atendimento", AGENCIAS_PATEND, "Postos_de_Atendimento", "Postos_Atendimento"),
+}
+
+
 class CaixaData:
 
     def __init__(
@@ -127,7 +137,7 @@ class CaixaData:
         )
 
         # loop
-        for cidade in self.opcoes:  # reduzir loop para teste
+        for cidade in self.opcoes[:5]:  # reduzir loop para teste
 
             # recebe uma cidade
             self.page.locator(ElementosId.ID_CIDADE.value).select_option(cidade)
@@ -234,29 +244,14 @@ class CaixaData:
                     self.data_posto_atendimento.append(linha_patendimento)
 
         return print("Finalizado!")
+    
 
     def exportar(self):
-        if self.tipo == TipoAtendimento.AGENCIAS:
-            df = pd.DataFrame(self.data_agencia, columns=AGENCIAS_PATEND)
-            df.to_csv(f"./Agencias/Agencias_{self.uf.value}.csv")
-            print("Arquivo exportado!")
-
-        elif self.tipo == TipoAtendimento.LOTERIAS:
-            df = pd.DataFrame(self.data_loteria, columns=CBANCARIO_LOTERICO)
-            df.to_csv(f"./Loterias/Loterias_{self.uf.value}.csv")
-            print("Arquivo exportado!")
-
-        elif self.tipo == TipoAtendimento.CBANCARIO:
-            df = pd.DataFrame(self.data_corr_bancario, columns=CBANCARIO_LOTERICO)
-            df.to_csv(
-                f"./Correspondente_Bancario/Correspondente_Bancario_{self.uf.value}.csv"
-            )
-            print("Arquivo exportado!")
-
-        elif self.tipo == TipoAtendimento.PATENDIMENTO:
-            df = pd.DataFrame(self.data_posto_atendimento, columns=AGENCIAS_PATEND)
-            df.to_csv(f"./Postos_de_Atendimento/Postos_Atendimento_{self.uf.value}.csv")
-            print("Arquivo exportado!")
+        atributo, colunas, pasta, prefixo = CONFIG_EXPORTACAO[self.tipo]
+        dados = getattr(self, atributo)
+        df = pd.DataFrame(dados, columns=colunas)
+        df.to_csv(f"./{pasta}/{prefixo}_{self.uf.value}.csv")
+        print("Arquivo exportado!")
 
     def ver_salvos(
         self,
